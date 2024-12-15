@@ -67,7 +67,7 @@ user_input = st.text_input("You:", "")
 #     st.write("Event Debug:", events)
 #     # for event in events:
 #     #     st.write(f"Chatbot: {event['messages'][-1]['bot_reply']}")
-
+from langgraph.graph.message import HumanMessage, AIMessage, ToolMessage
 if user_input:
     # Stream the graph events
     events = graph.stream({"messages": [("user", user_input)]}, stream_mode="values")
