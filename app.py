@@ -4,7 +4,7 @@ from typing_extensions import TypedDict
 from langchain_community.utilities import ArxivAPIWrapper, WikipediaAPIWrapper
 from langchain_community.tools import ArxivQueryRun, WikipediaQueryRun
 from langgraph.graph import StateGraph, START, END
-from langgraph.graph.message import add_messages
+from langgraph.graph.message import add_messages, HumanMessage, AIMessage, ToolMessage
 from langchain_groq import ChatGroq
 from langgraph.prebuilt import ToolNode, tools_condition
 
@@ -55,32 +55,44 @@ graph = graph_builder.compile()
 # Streamlit app layout
 st.title("Chatbot with LangGraph and Groq")
 
-# Display instructions
-st.write("Type your message below and interact with the chatbot.")
+# Initialize chat history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
 # User input field
 user_input = st.text_input("You:", "")
 
-# Display chatbot response
+# Process user input
 if user_input:
-    events = graph.stream({"messages": [("user", user_input)]}, stream_mode="values")
+    # Add the user input as a HumanMessage
+    st.session_state.chat_history.append(HumanMessage(content=user_input))
+
+    # Process the message through the graph
+    events = graph.stream({"messages": st.session_state.chat_history}, stream_mode="values")
     for event in events:
-        # Debug event structure
-        st.write("Event Debug:", event)
+        st.write("Event Debug:", event)  # Debugging
 
         try:
             # Get the last message in the 'messages' list
             last_message = event['messages'][-1]
-            
-            # Extract content based on message type
+
+            # Handle different message types
             if isinstance(last_message, HumanMessage):
-                st.write(f"User: {last_message.content}")
+                st.session_state.chat_history.append(last_message)
             elif isinstance(last_message, AIMessage):
-                st.write(f"Chatbot: {last_message.content}")
+                st.session_state.chat_history.append(last_message)
             elif isinstance(last_message, ToolMessage):
-                st.write(f"Tool ({last_message.name}): {last_message.content}")
+                st.session_state.chat_history.append(last_message)
             else:
                 st.error("Unknown message type received.")
         except Exception as e:
             st.error(f"Error retrieving chatbot reply: {e}")
 
+# Display chat history
+for message in st.session_state.chat_history:
+    if isinstance(message, HumanMessage):
+        st.write(f"You: {message.content}")
+    elif isinstance(message, AIMessage):
+        st.write(f"Chatbot: {message.content}")
+    elif isinstance(message, ToolMessage):
+        st.write(f"Tool ({message.name}): {message.content}")
