@@ -64,5 +64,6 @@ user_input = st.text_input("You:", "")
 # Display chatbot response
 if user_input:
     events = graph.stream({"messages": [("user", user_input)]}, stream_mode="values")
-    for event in events:
-        st.write(f"Chatbot: {event['messages'][-1]['bot_reply']}")
+    st.write("Event Debug:", events)
+    # for event in events:
+    #     st.write(f"Chatbot: {event['messages'][-1]['bot_reply']}")
