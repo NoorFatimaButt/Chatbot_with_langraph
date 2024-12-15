@@ -65,4 +65,12 @@ user_input = st.text_input("You:", "")
 if user_input:
     events = graph.stream({"messages": [("user", user_input)]}, stream_mode="values")
     for event in events:
-        st.write(f"Chatbot: {event['messages'][-1]['bot_reply']}")
+        # Debug event structure
+        st.write("Event Debug:", event)
+        
+        try:
+            # Safely extract the bot's reply
+            bot_reply = event['messages'][-1].get('bot_reply', "No reply from chatbot.")
+            st.write(f"Chatbot: {bot_reply}")
+        except Exception as e:
+            st.error(f"Error retrieving chatbot reply: {e}")
