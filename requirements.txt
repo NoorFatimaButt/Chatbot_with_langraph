@@ -1,8 +1,8 @@
-streamlit==1.23.0
-langgraph==0.1.0
-langsmith==0.0.6
-langchain==0.0.203
-langchain_groq==0.1.0
-langchain_community==0.1.0
-arxiv==0.9.0
-wikipedia==1.4.0
+streamlit
+langgraph
+langsmith
+langchain
+langchain_groq
+langchain_community
+arxiv
+wikipedia
