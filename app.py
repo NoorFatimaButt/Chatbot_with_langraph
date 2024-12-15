@@ -61,32 +61,11 @@ st.write("Type your message below and interact with the chatbot.")
 # User input field
 user_input = st.text_input("You:", "")
 
-# # Display chatbot response
-# if user_input:
-#     events = graph.stream({"messages": [("user", user_input)]}, stream_mode="values")
-#     st.write("Event Debug:", events)
-#     # for event in events:
-#     #     st.write(f"Chatbot: {event['messages'][-1]['bot_reply']}")
-from langgraph.graph.message import HumanMessage, AIMessage, ToolMessage
+# Display chatbot response
 if user_input:
-    # Stream the graph events
     events = graph.stream({"messages": [("user", user_input)]}, stream_mode="values")
-    
-    for event in events:
-        # st.write("Event Debug:", event)  # Debugging output
+    st.write("Event Debug:", events)
+    # for event in events:
+    #     st.write(f"Chatbot: {event['messages'][-1]['bot_reply']}")
 
-        try:
-            # Process each message in the event's `messages` list
-            for msg in event["messages"]:
-                if isinstance(msg, HumanMessage):
-                    st.write(f"User: {msg.content}")  # Display user input
-                elif isinstance(msg, AIMessage):
-                    if msg.content:  # Only show if there's a response
-                        st.write(f"Chatbot: {msg.content}")
-                elif isinstance(msg, ToolMessage):
-                    st.write(f"Tool Response ({msg.name}): {msg.content}")  # Display tool output
-                else:
-                    st.error("Unknown message type encountered.")
-        except Exception as e:
-            st.error(f"Error processing messages: {e}")
 
