@@ -67,10 +67,20 @@ if user_input:
     for event in events:
         # Debug event structure
         st.write("Event Debug:", event)
-        
+
         try:
-            # Safely extract the bot's reply
-            bot_reply = event['messages'][-1].get('bot_reply', "No reply from chatbot.")
-            st.write(f"Chatbot: {bot_reply}")
+            # Get the last message in the 'messages' list
+            last_message = event['messages'][-1]
+            
+            # Extract content based on message type
+            if isinstance(last_message, HumanMessage):
+                st.write(f"User: {last_message.content}")
+            elif isinstance(last_message, AIMessage):
+                st.write(f"Chatbot: {last_message.content}")
+            elif isinstance(last_message, ToolMessage):
+                st.write(f"Tool ({last_message.name}): {last_message.content}")
+            else:
+                st.error("Unknown message type received.")
         except Exception as e:
             st.error(f"Error retrieving chatbot reply: {e}")
+
