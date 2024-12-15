@@ -78,18 +78,15 @@ if user_input:
         try:
             # Process each message in the event's `messages` list
             for msg in event["messages"]:
-                # Parse the message type from the string
-                if msg.startswith("HumanMessage"):
-                    content = msg.split("content='")[1].split("',")[0]  # Extract user input
-                    st.write(f"User: {content}")
-                elif msg.startswith("AIMessage"):
-                    content = msg.split("content='")[1].split("',")[0]  # Extract AI response
-                    if content:  # Only show if there's a response
-                        st.write(f"Chatbot: {content}")
-                elif msg.startswith("ToolMessage"):
-                    content = msg.split("content='")[1].split("',")[0]  # Extract tool output
-                    st.write(f"Tool Response: {content}")
+                if isinstance(msg, HumanMessage):
+                    st.write(f"User: {msg.content}")  # Display user input
+                elif isinstance(msg, AIMessage):
+                    if msg.content:  # Only show if there's a response
+                        st.write(f"Chatbot: {msg.content}")
+                elif isinstance(msg, ToolMessage):
+                    st.write(f"Tool Response ({msg.name}): {msg.content}")  # Display tool output
                 else:
                     st.error("Unknown message type encountered.")
         except Exception as e:
             st.error(f"Error processing messages: {e}")
+
